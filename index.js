@@ -1,5 +1,7 @@
 const { RTMClient } = require('@slack/rtm-api');
 
+//IF we use Events API.
+
 const config = require('./config');
 var http = require("http");
 
@@ -16,11 +18,11 @@ rtm.start()
 
 
   rtm.on('message',(event)=>{
-    console.log(event);
+    
     let conversationId = event.channel;
     let userId = event.user;
     let message = event.text;
-
+    //This hack won't be needed, as we would subscribe to 'on_message' event, which means the bot would only response to messages directed at it
     let hbot = message.substring(0,12);
     
    
