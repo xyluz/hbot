@@ -13,16 +13,28 @@ const token = config.SLACK_TOKEN;
 const rtm = new RTMClient(token);
 
 
-rtm.start()
-  .catch(console.error);
+(async () => {
+  try {
+    const response = await rtm.start();
+    // console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+})();
 
+  rtm.on('ready', (event) => {
+    console.log("*********", "ready to roll!!");
+  });
 
-  rtm.on('message',(event)=>{
+  rtm.on('message',(event) => {
     let conversationId = event.channel;
     let userId = event.user;
-    let message = event.text;
+    // sometimes the event.text is undefined
+    let message = event.text || '<@UHFSY07C7>';
     //This hack won't be needed, as we would subscribe to 'on_message' event, which means the bot would only response to messages directed at it
     let hbot = message.substring(0,12);
+    // console.log(message);
+    // return;
 
 
     if(hbot === '<@UHKEQ2GDC>' && message.length > hbot.length){
@@ -46,29 +58,38 @@ rtm.start()
       };
 
       var req = http.request(options, function (res) {
-
-        res.on("data", function (data) {
+        let responseString = '';
+        req.on("data", function (data) {
             responseString += data;
             // save all the data from response
         });
-        res.on("end", function () {
+        req.on("end", function () {
+          // print to console when response ends
             console.log(responseString);
-            // print to console when response ends
+            const response = JSON.parse(responseString);
+            if (response.state == 'active') {
+              rtm.sendMessage('<@' + userId +'>, You are already a member of the github organization', conversationId);
+            } else if (response.state == 'pending') {
+              rtm.sendMessage('<@' + userId +'>, I have sent you an invite, please check your mail! 🙂', conversationId);
+            } else {
+              console.log('Data received');
+              rtm.sendMessage('<@' + userId +'>, I have sent you an invite, please check your mail! 🙂', conversationId);
+            }
         });
     });
 
         rtm.sendMessage('Okay <@' + userId +'>, Adding you to github organization', conversationId);
       }else{
-        rtm.sendMessage('Hey <@' + userId +'>, Sorry, cant do that yet', conversationId);
+        rtm.sendMessage('Hey <@' + userId +'>, What are you saying?', conversationId);
       }
 
 
     }
 
-    if(message === hbot){
-      //meaning their message is just my name
-      rtm.sendMessage('Hello there <@' + userId +'>, how can i help you?', conversationId);
-    }
+    // if(message === hbot){
+    //   //meaning their message is just my name
+    //   rtm.sendMessage('Hello there <@' + userId +'>, how can i help you?', conversationId);
+    // }
 
   console.log(message);
 });
