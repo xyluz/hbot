@@ -4,7 +4,8 @@
   "description": "hnginternship5 bot for github invite",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -26,5 +27,8 @@
     "@slack/events-api": "^2.2.0",
     "@slack/rtm-api": "^5.0.0",
     "@slack/web-api": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }

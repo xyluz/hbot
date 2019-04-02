@@ -18,17 +18,16 @@ rtm.start()
 
 
   rtm.on('message',(event)=>{
-    
     let conversationId = event.channel;
     let userId = event.user;
     let message = event.text;
     //This hack won't be needed, as we would subscribe to 'on_message' event, which means the bot would only response to messages directed at it
     let hbot = message.substring(0,12);
-    
-   
+
+
     if(hbot === '<@UHKEQ2GDC>' && message.length > hbot.length){
       //this means their message comtains more than just my name
-     
+
       //check the message after my name, and see if it means what i want
 
       let afterName = message.substring(12,message.length);
@@ -47,13 +46,13 @@ rtm.start()
       };
 
       var req = http.request(options, function (res) {
-            
+
         res.on("data", function (data) {
             responseString += data;
             // save all the data from response
         });
         res.on("end", function () {
-            console.log(responseString); 
+            console.log(responseString);
             // print to console when response ends
         });
     });
@@ -73,6 +72,3 @@ rtm.start()
 
   console.log(message);
 });
-
-
-
