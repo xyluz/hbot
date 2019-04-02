@@ -14,8 +14,7 @@ const rtm = new RTMClient(token);
 
 (async () => {
   try {
-    const response = await rtm.start();
-    // console.log(response);
+    await rtm.start();
   } catch (error) {
     console.log(error);
   }
@@ -29,11 +28,9 @@ const rtm = new RTMClient(token);
     let conversationId = event.channel;
     let userId = event.user;
     // sometimes the event.text is undefined
-    let message = event.text || '<@UHFSY07C7>';
+    let message = event.text || 'EMPTY MESSAGE!';
     //This hack won't be needed, as we would subscribe to 'on_message' event, which means the bot would only response to messages directed at it
     let hbot = message.substring(0,12);
-    // console.log(message);
-    // return;
 
 
     if(hbot === '<@UHKEQ2GDC>' && message.length > hbot.length){
@@ -50,16 +47,13 @@ const rtm = new RTMClient(token);
       if(commands[1] == 'add'){
         //connect to github
 
-        var options = {
-          host: "api.github.com/",
-          path: "orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
-          method: "PUT"
-      };
-
+      const headers = {'user-agent': 'node.js'};
       const opts = {
         method: "PUT",
-        host: "https://api.github.com",
-        uri: "orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
+        baseUrl: "https://api.github.com/",
+        uri: "orgs/StayBusy/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
+        json: true,
+        headers,
       };
 
      rp(opts, function(err, res, body) {
@@ -67,21 +61,26 @@ const rtm = new RTMClient(token);
          console.error(err);
          return;
        }
-
+        res = res.toJSON();
+        if (res.body.state == 'active') {
+          rtm.sendMessage('<@' + userId +'>, You are already a member of the github organization', conversationId);
+        } else if (res.body.state == 'pending') {
+          rtm.sendMessage('<@' + userId +'>, I have sent an invite to ' + commands[2] + '! Cheers! 🙂', conversationId);
+        } else {
+          console.log(res);
+          rtm.sendMessage('<@' + userId +'>, Sorry! I could not invite ' + commands[2] + ' to github org! ☹', conversationId);
+        }
      });
 
-        rtm.sendMessage('Okay <@' + userId +'>, Adding you to github organization', conversationId);
+        rtm.sendMessage('Okay <@' + userId +'>, Adding ' + commands[2] + ' to github organization...', conversationId);
       }else{
-        rtm.sendMessage('Hey <@' + userId +'>, What are you saying?', conversationId);
+        rtm.sendMessage('Hey <@' + userId +'>, Sorry! cannot do that yet!', conversationId);
       }
 
 
     }
 
-    // if(message === hbot){
-    //   //meaning their message is just my name
-    //   rtm.sendMessage('Hello there <@' + userId +'>, how can i help you?', conversationId);
-    // }
-
-  console.log(message);
+    if (message === '<@UHKEQ2GDC>')
+        rtm.sendMessage('Hello there <@' + userId +'>, how can i help you? 🙂', conversationId);
+      console.log(message);
 });
