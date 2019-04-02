@@ -3,8 +3,7 @@ const { RTMClient } = require('@slack/rtm-api');
 //IF we use Events API.
 
 const config = require('./config');
-var http = require("http");
-
+const rp = require('request');
 // An access token (from your Slack app or custom integration - xoxp, xoxb)
 const token = config.SLACK_TOKEN;
 
@@ -52,31 +51,24 @@ const rtm = new RTMClient(token);
         //connect to github
 
         var options = {
-          host: "developer.api.autodesk.com",
-          path: "https://api.github.com/orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
+          host: "api.github.com/",
+          path: "orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
           method: "PUT"
       };
 
-      var req = http.request(options, function (res) {
-        let responseString = '';
-        req.on("data", function (data) {
-            responseString += data;
-            // save all the data from response
-        });
-        req.on("end", function () {
-          // print to console when response ends
-            console.log(responseString);
-            const response = JSON.parse(responseString);
-            if (response.state == 'active') {
-              rtm.sendMessage('<@' + userId +'>, You are already a member of the github organization', conversationId);
-            } else if (response.state == 'pending') {
-              rtm.sendMessage('<@' + userId +'>, I have sent you an invite, please check your mail! 🙂', conversationId);
-            } else {
-              console.log('Data received');
-              rtm.sendMessage('<@' + userId +'>, I have sent you an invite, please check your mail! 🙂', conversationId);
-            }
-        });
-    });
+      const opts = {
+        method: "PUT",
+        host: "https://api.github.com",
+        uri: "orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
+      };
+
+     rp(opts, function(err, res, body) {
+       if (err) {
+         console.error(err);
+         return;
+       }
+
+     });
 
         rtm.sendMessage('Okay <@' + userId +'>, Adding you to github organization', conversationId);
       }else{

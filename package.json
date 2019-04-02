@@ -26,9 +26,11 @@
   "dependencies": {
     "@slack/events-api": "^2.2.0",
     "@slack/rtm-api": "^5.0.0",
-    "@slack/web-api": "^5.0.0"
+    "@slack/web-api": "^5.0.0",
+    "request": "^2.88.0"
   },
   "devDependencies": {
+    "@types/request": "^2.48.1",
     "nodemon": "^1.18.10"
   }
 }
