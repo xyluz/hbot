@@ -7,6 +7,7 @@ const rp = require('request');
 // An access token (from your Slack app or custom integration - xoxp, xoxb)
 const token = config.SLACK_TOKEN;
 
+const tasks = require('./tasks');
 
 // The client is initialized and then started to get an active connection to the platform
 const rtm = new RTMClient(token);
@@ -25,7 +26,7 @@ const rtm = new RTMClient(token);
   });
 
   rtm.on('message',(event) => {
-    let conversationId = event.channel;
+    let channelId = event.channel;
     let userId = event.user;
     // sometimes the event.text is undefined
     let message = event.text || 'EMPTY MESSAGE!';
@@ -51,7 +52,7 @@ const rtm = new RTMClient(token);
       const opts = {
         method: "PUT",
         baseUrl: "https://api.github.com/",
-        uri: "orgs/StayBusy/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
+        uri: "orgs/hnginternship5/memberships/" + commands[2] + "?access_token=" + config.GITHUB_TOKEN,
         json: true,
         headers,
       };
@@ -63,24 +64,32 @@ const rtm = new RTMClient(token);
        }
         res = res.toJSON();
         if (res.body.state == 'active') {
-          rtm.sendMessage('<@' + userId +'>, You are already a member of the github organization', conversationId);
+          rtm.sendMessage('<@' + userId +'>, You are already a member of the github organization', channelId);
         } else if (res.body.state == 'pending') {
-          rtm.sendMessage('<@' + userId +'>, I have sent an invite to ' + commands[2] + '! Cheers! 🙂', conversationId);
+          rtm.sendMessage('<@' + userId +'>, I have sent an invite to ' + commands[2] + '! Cheers! 🙂', channelId);
         } else {
           console.log(res);
-          rtm.sendMessage('<@' + userId +'>, Sorry! I could not invite ' + commands[2] + ' to github org! ☹', conversationId);
+          rtm.sendMessage('<@' + userId +'>, Sorry! I could not invite ' + commands[2] + ' to github org! ☹', channelId);
         }
      });
 
-        rtm.sendMessage('Okay <@' + userId +'>, Adding ' + commands[2] + ' to github organization...', conversationId);
+        rtm.sendMessage('Okay <@' + userId +'>, Adding ' + commands[2] + ' to github organization...', channelId);
+      }else if(commands[1] == 'show'){
+
+        if(commands[2] == 'tasks' || 'task'  || 'works' || 'todo'){
+          console.log(channelId.toLowerCase());
+          rtm.sendMessage('<@' + userId +'>,' + tasks.channel(channelId), channelId);
+
+        }
+
       }else{
-        rtm.sendMessage('Hey <@' + userId +'>, Sorry! cannot do that yet!', conversationId);
+        rtm.sendMessage('Hey <@' + userId +'>, Sorry! cannot do that yet!', channelId);
       }
 
 
     }
 
     if (message === '<@UHKEQ2GDC>')
-        rtm.sendMessage('Hello there <@' + userId +'>, how can i help you? 🙂', conversationId);
+        rtm.sendMessage('Hello there <@' + userId +'>, how can i help you? 🙂', channelId);
       console.log(message);
 });
