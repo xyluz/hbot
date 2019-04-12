@@ -25,8 +25,7 @@
   "homepage": "https://github.com/xyluz/hbot#readme",
   "dependencies": {
     "@slack/events-api": "^2.2.0",
-    "@slack/rtm-api": "^5.0.0",
-    "@slack/web-api": "^5.0.0",
+    "@slack/client": "^4.3.1",
     "request": "^2.88.0"
   },
   "devDependencies": {

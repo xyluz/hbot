@@ -1,0 +1,6 @@
+module.exports = {
+    SLACK_SIGNING_SECRET: '<SIGNING_SECRET>',
+    BOT_TOKEN: '<BOT_TOKEN>',
+    BOT_USER: '<BOT_USERNAME>',
+    GITHUB_TOKEN: '<TOKEN>'
+};
